@@ -45,17 +45,35 @@
 
   (count (filter (comp some? (nth sample-map 2)) sample-positions)))
 
-
-(defn solve-part-1 [input]
-  (let [[width height trees] (parse-input input)
+(defn count-trees [the-map slope]
+  (let [[width height trees] the-map
         end-not-reached? (fn [[x y]] (< y height))]
     (->> INITIAL_POSITION
-         (iterate #(move % SLOPE [width]))
+         (iterate #(move % slope [width]))
          (take-while end-not-reached?)
          (filter (comp some? trees))
          count)))
+
+(defn solve-part-1 [input]
+  (count-trees (parse-input input) SLOPE))
 (comment
   (solve-part-1 sample-input))
 
 (solve-part-1 (slurp "day03/input"))
 ;; 252
+
+(def SLOPES [[1 1] [3 1] [5 1] [7 1] [1 2]])
+
+(comment
+  (apply * (map
+            (partial count-trees sample-map)
+            SLOPES)))
+
+(defn solve-part-2 [input]
+  (let [the-map (parse-input input)]
+    (->> SLOPES
+         (map (partial count-trees the-map))
+         (apply *))))
+
+(solve-part-2 (slurp "day03/input"))
+;; => 2608962048
