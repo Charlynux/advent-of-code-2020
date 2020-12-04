@@ -1,5 +1,6 @@
 (require '[clojure.string :as str]
-         '[clojure.spec.alpha :as s])
+         '[clojure.spec.alpha :as s]
+         '[clojure.set :as set])
 
 (def sample-input "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -14,6 +15,24 @@ hgt:179cm
 
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in")
+
+
+(defn quick-parsing [input]
+  (let [lines (str/split input #"\n\n")
+        passports (map #(set (map second (re-seq #"(\w+):" %))) lines)]
+    passports))
+
+(def MANDATORY-FIELDS #{"hgt" "pid" "byr" "eyr" "iyr" "ecl" "hcl"})
+
+(defn valid? [passport] (empty? (set/difference MANDATORY-FIELDS passport)))
+
+(defn solve-part-1 [input]
+  (count (filter valid? (quick-parsing input))))
+
+(solve-part-1 sample-input)
+
+(solve-part-1 (slurp "day04/input"))
+;; 230
 
 (defn parse-field [field]
   (let [[key value] (str/split field #":")]
@@ -40,12 +59,3 @@ byr:1937 iyr:2017 cid:147 hgt:183cm")
 (s/def ::pid string?)
 (s/def ::cid string?)
 (s/def ::password (s/keys :req-un [::byr ::iyr ::eyr ::hgt ::hcl ::ecl ::pid] :opt-un [::cid]))
-
-
-(defn solve-part-1 [input]
-  (count (filter #(s/valid? ::password %) (parse-input input))))
-
-(solve-part-1 sample-input)
-
-(solve-part-1 (slurp "day04/input"))
-;; 230
