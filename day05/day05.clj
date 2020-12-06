@@ -59,3 +59,34 @@
      ffirst
      dec)
 ;; 562
+
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;; Study bits manipulations
+;; Arne Brasseur (@plexus) solves this through bit manipulation.
+;; If the "binary nature" of those codes is easy to get, I don't see how to implements it.
+;; Here I decompose his solution to understand it.
+
+(def chars {\B 1 \F 0 \L 0 \R 1})
+
+(defn bits->num [bits]
+  (reduce (fn [num bit]
+            (println num)
+            (-> num
+                (bit-shift-left 1)
+                (bit-or bit)))
+          0
+          (map chars bits)))
+
+(bits->num "BBB")
+(bit-shift-left 3 1) ;; 11 -> 110
+(bit-or 6 1) ;; 110 bit-or 1 -> 111
+
+;; Advanced solution
+(defn bits->num [bits]
+  (reduce #(+ (* %1 2) %2) 0 (map chars bits)))
+;; No more row or column needed
+;; id = (row * 8) + column = (row * 2^3) + column
+;; with column on 3 bits :
+;; FBFBBFFRLR -> 0101100101 -> id in binary
+;; That's so clever ! Congrats to those who finds these.
