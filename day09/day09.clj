@@ -25,17 +25,16 @@
 (defn valid? [[numbers n]]
   (let [combinations (for [a numbers
                            b numbers
-                           :when (not= a b)
-                           :when (= (+ a b) n)]
-                       :found)]
-    (some? (first combinations))))
+                           :when (< a b)]
+                       (+ a b))]
+    (some #{n} combinations)))
 
 (defn solve-part-1 [preamble-size input]
   (->> input
        str/split-lines
        (map read-string)
        (partition (inc preamble-size) 1)
-       (map #(vector (take preamble-size %) (last %)))
+       (map #(vector (butlast %) (last %)))
        (remove valid?)
        first))
 
