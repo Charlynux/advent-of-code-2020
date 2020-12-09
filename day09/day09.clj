@@ -41,3 +41,25 @@
 
 (solve-part-1 5 sample-input)
 (solve-part-1 25 real-input)
+
+(defn search [numbers searched]
+  (let [length (count numbers)]
+    (for [n (range length)]
+      (loop [previous (get numbers n)
+             m (inc n)]
+        (let [value (+ previous (get numbers m 0))]
+          (cond
+            (>= m length) :not-found
+            (> value searched) :not-found
+            (= value searched) [n m]
+            :else (recur value (inc m))))))))
+
+(defn solve-part-2 [input searched]
+  (let [numbers (vec (map read-string (str/split-lines input)))
+        [n m] (first (drop-while #{:not-found} (search numbers searched)))
+        found-range (subvec numbers n (inc m))]
+    (+ (reduce max found-range)
+       (reduce min found-range))))
+
+(solve-part-2 sample-input 127)
+(solve-part-2 real-input 31161678)
