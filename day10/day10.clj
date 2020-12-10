@@ -77,4 +77,22 @@
 
 (solve-part-2 sample-input)
 (solve-part-2 sample-input2)
-(solve-part-2 real-input)
+(time (solve-part-2 real-input))
+
+;; Shortest-path, for A* training
+(let [xs real-input
+      target (reduce max xs)]
+  (loop [open #{0}
+         seen #{}
+         numbers (sort xs)]
+    (cond
+      (open target) (sort seen)
+      (empty? open) [:failed open seen numbers]
+      :else
+      (let [next (reduce max 0 open)]
+        (recur
+         (-> open
+             (disj next)
+             (into (take-while #(<= % (+ next 3)) numbers)))
+         (conj seen next)
+         (drop-while #(<= % (+ next 3)) numbers))))))
