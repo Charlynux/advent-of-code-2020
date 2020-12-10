@@ -96,3 +96,25 @@
              (into (take-while #(<= % (+ next 3)) numbers)))
          (conj seen next)
          (drop-while #(<= % (+ next 3)) numbers))))))
+
+(defn solve-part-2-with-recur [xs]
+  (let [start 0
+        target (+ (reduce max xs) 3)
+        numbers (sort (conj xs target))]
+    (loop [open #{start}
+           closed { target 1 }]
+      (if (empty? open) (get closed start)
+          (let [next (reduce max open)
+                childs (filter #(<= (inc next) % (+ next 3)) numbers)
+                open-childs (remove (set (keys closed)) childs)]
+            (if (empty? open-childs)
+              (recur
+               (disj open next)
+               (assoc closed next (reduce + (map closed childs))))
+              (recur
+               (into open open-childs)
+               closed)))))))
+
+(solve-part-2-with-recur sample-input)
+(solve-part-2-with-recur sample-input2)
+(time (solve-part-2-with-recur real-input))
