@@ -25,3 +25,29 @@
 
 (solve-part-1 sample-input)
 (solve-part-1 real-input)
+
+;; An x in the schedule means there are no constraints on what bus IDs must depart at that time.
+
+
+;; 17,x,13,19
+;; (mod n 17) = 0
+;; (mod (+ n 2) 13) = 0
+
+(defn pair [index value] (when (int? value) [value index]))
+
+(defn step [[value index]] (fn [i] (- (* i value) index)))
+
+(defn valid? [n pairs]
+  (every? (fn [[value index]] (zero? (mod (+ index n) value))) pairs))
+
+(time (let [input sample-input
+           parsed-input (parse-input input)
+           pairs (->> parsed-input
+                      second
+                      vec
+                      (map-indexed pair)
+                      (remove nil?))
+           max-pair (last (sort-by first pairs))
+           steps (map (step max-pair) (drop 1 (range)))]
+        (first (filter #(valid? % pairs) steps))))
+;; 20 seconds, with sample-input !!!!!!!
