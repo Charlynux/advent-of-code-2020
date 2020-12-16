@@ -100,20 +100,23 @@
 (defn solve-part-2-with-recur [xs]
   (let [start 0
         target (+ (reduce max xs) 3)
-        numbers (sort (conj xs target))]
+        numbers (conj xs target)
+        ->childs (into {} (map (fn [value] [value (filter #(<= (inc value) % (+ value 3)) numbers)])
+                               (conj numbers start)))]
     (loop [open #{start}
            closed { target 1 }]
-      (if (empty? open) (get closed start)
-          (let [next (reduce max open)
-                childs (filter #(<= (inc next) % (+ next 3)) numbers)
-                open-childs (remove (set (keys closed)) childs)]
-            (if (empty? open-childs)
-              (recur
-               (disj open next)
-               (assoc closed next (reduce + (map closed childs))))
-              (recur
-               (into open open-childs)
-               closed)))))))
+      (if (empty? open)
+        (get closed start)
+        (let [next (reduce max open)
+              childs (->childs next)
+              open-childs (remove #(contains? closed %) childs)]
+          (if (empty? open-childs)
+            (recur
+             (disj open next)
+             (assoc closed next (reduce + (map closed childs))))
+            (recur
+             (into open open-childs)
+             closed)))))))
 
 (solve-part-2-with-recur sample-input)
 (solve-part-2-with-recur sample-input2)
