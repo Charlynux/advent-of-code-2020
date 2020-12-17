@@ -65,3 +65,45 @@
 
 (solve-part-1 sample-input)
 (solve-part-1 real-input)
+
+(defn parse-input-2 [input]
+  (into #{}
+        (comp
+         (map-indexed
+          (fn [y row]
+            (map-indexed (fn [x value]
+                           (when (not= \. value)
+                             [x y 0 0])) row)))
+         cat
+         (filter some?))
+        (str/split-lines input)))
+
+(defn find-neighbors-2 [[x y z w]]
+  (for [x' (range -1 2)
+        y' (range -1 2)
+        z' (range -1 2)
+        w' (range -1 2)
+        :when (not= 0 x' y' z' w')]
+    [(+ x x') (+ y y') (+ z z') (+ w w')]))
+
+(count (find-neighbors-2 [0 0 0 0]))
+
+(defn generation-2 [actives]
+  (let [neighbors-count (frequencies (mapcat find-neighbors-2 actives))]
+    (into
+     #{}
+     (comp
+      (map (fn [[coords nb]]
+             (when (or
+                    (and (actives coords)
+                         (#{2 3} nb))
+                    (and (not (actives coords))
+                         (= 3 nb))) coords)) )
+      (filter some?))
+     neighbors-count)))
+
+(defn solve-part-2 [input]
+  (count (nth (iterate generation-2 (parse-input-2 input)) 6)))
+
+(solve-part-2 sample-input)
+(solve-part-2 real-input)
