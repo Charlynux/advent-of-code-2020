@@ -43,3 +43,39 @@
      (map math)
      (reduce + 0))
 ;; => 11076907812171
+
+(defn advanced-precedence-group [exprs]
+  (loop [previous nil
+         [a op] (take 2 exprs)
+         next (drop 2 exprs)]
+    (cond
+      (= op '+) [previous [a op (first next)] (rest next)]
+      (= 1 (count next)) [nil (take 3 exprs) (drop 3 exprs)]
+      :else (recur (concat previous [a op]) (take 2 next) (drop 2 next)))))
+
+(advanced-precedence-group (list 1 '* 3 '+ 2))
+
+(defn advanced-precedence-rule [exprs]
+  (loop [exprs exprs]
+    (cond
+      (not (seq? exprs)) exprs
+      (= (count exprs) 1) (first exprs)
+      :else (let [[before [a op b] after] (advanced-precedence-group exprs)]
+              (recur (concat before (cons (list (advanced-precedence-rule a) op (advanced-precedence-rule b)) after)))))))
+
+(defn advanced-parse [input]
+  (advanced-precedence-rule (read-string (str "(" input ")"))))
+
+(eval (advanced-parse "1 + 2 * 3 + 4 * 5 + 6"))
+
+(def advanced-math (comp eval advanced-parse))
+
+(advanced-math "1 + (2 * 3) + (4 * (5 + 6))")
+(advanced-math "2 * 3 + (4 * 5)")
+(advanced-math "5 + (8 * 3 + 9 + 3 * 4 * 3)")
+
+(->> (slurp "day18/input")
+     clojure.string/split-lines
+     (map advanced-math)
+     (reduce + 0))
+;; => 283729053022731
