@@ -1,1 +1,2 @@
-{:deps {com.cognitect/transcriptor {:mvn/version "0.1.5"}}}
+{:deps {com.cognitect/transcriptor {:mvn/version "0.1.5"}
+        instaparse/instaparse {:mvn/version "1.4.10"}}}
