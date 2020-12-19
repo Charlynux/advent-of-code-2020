@@ -42,13 +42,7 @@ aaabbb
 aaaabbb")
 (def real-input (slurp "day19/input"))
 
-(defn sort-rules [rules]
-  (->> rules
-       (re-seq #"(\d+): .*")
-       (map (fn [[rule index]] [rule (read-string index)]))
-       (sort-by second)
-       (map first)
-       (str/join "\n")))
+(defn sort-rules [rules] (str "valid : 0\n" rules))
 
 (defn solve-part-1 [input]
   (let [[rules messages] (str/split input #"\R\R")
