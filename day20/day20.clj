@@ -65,14 +65,68 @@
 
 (defn third [xs] (nth xs 2))
 
+(defn find-tile-by-borders [matching-borders n]
+  (->> (mapcat (juxt first third) matching-borders)
+       frequencies
+       (filter #(= n (second %)))
+       (map first)))
+
 (defn solve-part-1 [input]
   (let [matching-borders (find-matching-borders input)
-        tiles (mapcat (juxt first third) matching-borders)]
-    (->> tiles
-         frequencies
-         (filter #(= 2 (second %)))
-         (map first)
-         (apply *))))
+        corners (find-tile-by-borders matching-borders 2) ]
+    (apply * corners)))
 
 (solve-part-1 sample-input)
 (solve-part-1 real-input)
+
+"
+borders
+  0
+2   3
+  1
+reverse...
+  4
+6   7
+  5"
+
+(defn flip-horizontal [matrix]
+  (into {}
+        (map (fn [[[x y] v]] [[(Math/abs (- 9 x)) y] v]))
+        matrix))
+
+(defn flip-vertical [matrix]
+  (into {}
+        (map (fn [[[x y] v]] [[x (Math/abs (- 9 y))] v]))
+        matrix))
+
+(defn rot [[x y]] [(- 10 y 1) x])
+
+(defn rotate [matrix]
+  (into {}
+        (map (fn [[coords v]] [(rot coords) v]))
+        matrix))
+
+(defn debug-layout [layout]
+  (prn "--------------------------------------------------------------")
+  (let [width (apply max (map first (keys layout)))
+        height (apply max (map second (keys layout)))]
+    (doseq [x (range (inc width))]
+      (doseq [y (range (inc height))]
+        (pr (layout [y x])))
+      (prn))))
+
+(comment
+  (debug-layout (first (vals sample-input)))
+  (debug-layout (flip-horizontal (first (vals sample-input))))
+  (debug-layout (flip-vertical (first (vals sample-input))))
+  (debug-layout (rotate (first (vals sample-input)))))
+
+(let [matching-borders (find-matching-borders real-input)
+      start (first (find-tile-by-borders matching-borders 2))
+      tree {}
+      neighbors (keep
+                 (fn [[id idx id' idx' :as b]]
+                   (or (when (= start id) id')
+                       (when (= start id') id)))
+                 matching-borders)]
+  )
