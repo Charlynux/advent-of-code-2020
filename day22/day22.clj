@@ -34,3 +34,42 @@
 
 (let [decks (map parse-deck (str/split (slurp "day22/input") #"\R\R"))]
   (calculate-score (apply play-game decks)))
+
+(defn play-recursive-game [xs ys]
+  (loop [xs xs
+         ys ys
+         rounds #{}]
+    (cond
+      (empty? xs) ['y ys]
+      (empty? ys) ['x xs]
+      (rounds [xs ys]) ['x xs]
+      :else
+      (let [x (first xs)
+            y (first ys)
+            xrest (vec (rest xs))
+            yrest (vec (rest ys))
+            winner (cond
+                     (and (<= x (count xrest))
+                          (<= y (count yrest)))
+                     (first (play-recursive-game
+                             (take x xrest)
+                             (take y yrest)))
+
+                     (< x y) 'y
+                     (> x y) 'x)]
+        (case winner
+          y (recur
+                   xrest
+                   (conj yrest y x)
+                   (conj rounds [xs ys]))
+          x (recur
+             (conj xrest x y)
+                   yrest
+                   (conj rounds [xs ys])))))))
+
+(play-recursive-game [43 19] [2 29 14])
+(play-recursive-game [9, 2, 6, 3, 1] [5, 8, 4, 7, 10])
+
+(let [decks (map parse-deck (str/split (slurp "day22/input") #"\R\R"))]
+  (calculate-score (second (apply play-recursive-game decks))))
+;; 31793
