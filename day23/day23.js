@@ -98,19 +98,21 @@ function findDestinationValue(maxValue, current, pickUp) {
   return destinationValue;
 }
 
-function step(cups) {
-  const current = cups.draw();
-  const pickUp = [cups.draw(), cups.draw(), cups.draw()];
-  const destinationValue = findDestinationValue(9, current, pickUp);
-  const destinationNode = cups.findValue(destinationValue);
+function createSteps(max) {
+  return function step(cups) {
+    const current = cups.draw();
+    const pickUp = [cups.draw(), cups.draw(), cups.draw()];
+    const destinationValue = findDestinationValue(max, current, pickUp);
+    const destinationNode = cups.findValue(destinationValue);
 
-  pickUp.reverse().forEach(function (value) {
-    cups.insertAfter(destinationNode, value);
-  });
+    pickUp.reverse().forEach(function (value) {
+      cups.insertAfter(destinationNode, value);
+    });
 
-  cups.append(new Node(current));
+    cups.append(new Node(current));
 
-  return cups;
+    return cups;
+  };
 }
 
 function codeLabel(cups) {
@@ -132,20 +134,48 @@ function codeLabel(cups) {
   return result;
 }
 
+const stepPart1 = createSteps(9);
 function solvePart1(xs) {
   let cups = Cups.fromList(xs);
   for (let index = 0; index < 100; index++) {
-    cups = step(cups);
+    cups = stepPart1(cups);
   }
 
   return codeLabel(cups);
 }
 
-console.log("Sample : ", solvePart1([3, 8, 9, 1, 2, 5, 4, 6, 7]));
-console.log("Real : ", solvePart1([3, 9, 8, 2, 5, 4, 7, 1, 6]));
+// console.log("Sample : ", solvePart1([3, 8, 9, 1, 2, 5, 4, 6, 7]));
+// console.log("Real : ", solvePart1([3, 9, 8, 2, 5, 4, 7, 1, 6]));
+
+function completeCups(cups, max) {
+  for (let i = 10; i <= max; i++) {
+    cups.append(new Node(i));
+  }
+}
+
+const maxPart2 = 1000000;
+const stepPart2 = createSteps(maxPart2);
+function solvePart2(xs) {
+  let cups = Cups.fromList(xs);
+  completeCups(cups, maxPart2);
+  for (let index = 0; index < 10000000; index++) {
+    cups = stepPart2(cups);
+
+    if (index % 100 == 0) {
+      process.stdout.write(index % 1000 == 0 ? "M" : ".");
+    }
+  }
+
+  const target = cups.findValue(1);
+
+  return [target.next.value, target.next.next.value];
+}
+
+// console.log("Sample : ", solvePart2([3, 8, 9, 1, 2, 5, 4, 6, 7]));
+console.log("Real : ", solvePart2([3, 9, 8, 2, 5, 4, 7, 1, 6]));
 
 module.exports = {
   Node,
   Cups,
-  step,
+  createSteps,
 };

@@ -1,4 +1,4 @@
-const { Node, Cups, step } = require("./day23");
+const { Node, Cups, createSteps } = require("./day23");
 
 test("Node constructor", () => {
   const node = new Node(3);
@@ -80,12 +80,12 @@ test("testAfter end", () => {
 });
 
 test("Sample input move 1", () => {
-  const result = step(Cups.fromList([3, 8, 9, 1, 2, 5, 4, 6, 7]));
+  const result = createSteps(9)(Cups.fromList([3, 8, 9, 1, 2, 5, 4, 6, 7]));
 
   expect(result.toList()).toStrictEqual([2, 8, 9, 1, 5, 4, 6, 7, 3]);
 });
 test("Sample input move 2", () => {
-  const result = step(Cups.fromList([2, 8, 9, 1, 5, 4, 6, 7, 3]));
+  const result = createSteps(9)(Cups.fromList([2, 8, 9, 1, 5, 4, 6, 7, 3]));
 
   expect(result.toList()).toStrictEqual([5, 4, 6, 7, 8, 9, 1, 3, 2]);
 });
