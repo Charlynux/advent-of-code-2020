@@ -1,0 +1,22 @@
+{
+  "name": "advent-of-code-2020",
+  "version": "1.0.0",
+  "description": "",
+    "scripts": {
+        "test": "jest"
+    },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charlynux/advent-of-code-2020.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Charlynux/advent-of-code-2020/issues"
+  },
+  "homepage": "https://github.com/Charlynux/advent-of-code-2020#readme",
+  "devDependencies": {
+    "jest": "^26.6.3"
+  }
+}
