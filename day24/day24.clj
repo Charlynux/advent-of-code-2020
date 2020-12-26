@@ -40,9 +40,22 @@ wseweeenwnesenwwwswnew")
 
 (def REFERENCE_TILE [0 0])
 
-(->> (slurp "day24/input")
-     clojure.string/split-lines
-     (map #(move REFERENCE_TILE (parse-line %)))
-     frequencies
-     (filter (comp odd? second))
-     count)
+(defn parse-input [input]
+  (map parse-line (str/split-lines input)))
+
+(defn flip [value] (if (= value 1) 0 1))
+
+(defn flip-tile [matrix tile]
+  (update matrix tile flip))
+
+(defn create-matrix [input]
+  (reduce flip-tile {}
+          (map #(move REFERENCE_TILE %)
+               (parse-input input))))
+
+(def initial-layout (create-matrix (slurp "day24/input")))
+
+(def black-tiles (filter (comp #{1} second) initial-layout))
+
+;; Part 1
+(count black-tiles)
