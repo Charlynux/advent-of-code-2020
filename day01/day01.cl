@@ -12,8 +12,8 @@
                    append (loop for j in ns
                                 when (and (< i j) (not (eq i j)))
                                   when (= 2020 (+ i j))
-                                    collect (cons i j)))))
-  (* (caar pairs) (cdar pairs)))
+                                    collect (* i j)))))
+  (car pairs))
 
 ;; Solution 2
 (let ((pairs (loop for i in ns
@@ -21,5 +21,5 @@
                                 append (loop for k in ns
                                              when (and (not (eq i j)) (not (eq j k)) (not (eq i k)) )
                                                when (= 2020 (+ i j k))
-                                                 collect (cons i (cons j k)))))))
-  (* (caar pairs) (cadar pairs) (cddar pairs)))
+                                                 collect (* i j k))))))
+  (car pairs))
